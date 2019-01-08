@@ -9,7 +9,8 @@ When the user touches the touchscreen a resistance in both directions
 is detected by the touchscreen controller.
 The touchscreen controller records the X and Y resistance changes using
 an ADC that can measure the voltage from the resistance changes in the
-X an Y directions.
+X an Y directions. A schematic of the test board used is included in
+this project.
 
 ### API
 
@@ -123,10 +124,6 @@ This driver has been tested with the following display
 
     http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
 
-in all four orientations using a modified version of the
+in all four orientations using a modified version of the following project
 
     https://github.com/mongoose-os-apps/huzzah-featherwing
-
-project.
-
-A schematic of the test board used is included in this project.
