@@ -35,19 +35,22 @@ some other data is passed to the callback function.
 
 The structure passed to the calling routine has the following attributes.
 
-  enum mgos_ads7843_touch_t       direction;   //Either TOUCH_DOWN or TOUCH_UP
-  float                           down_seconds; //The time in seconds that the touch screen has been held down.
-  uint16_t                        x;            //The x pos (ADC value not pixels)
-  uint16_t                        y;            //The y pos (ADC value not pixels)
-  uint8_t                         x_adc;        //The X ADC value read from the ADS7843 device
-  uint8_t                         y_adc;        //The Y ADC value read from the ADS7843 device
+```
+enum mgos_ads7843_touch_t       direction;   //Either TOUCH_DOWN or TOUCH_UP
+float                           down_seconds; //The time in seconds that the touch screen has been held down.
+uint16_t                        x;            //The x pos (ADC value not pixels)
+uint16_t                        y;            //The y pos (ADC value not pixels)
+uint8_t                         x_adc;        //The X ADC value read from the ADS7843 device
+uint8_t                         y_adc;        //The Y ADC value read from the ADS7843 device
+```
 
-The example application below shows the mos.yml attributes that maybe used.
-The min_x_adc, max_x_adc, min_y_adc and max_y_adc should be set to values
-to calibrated the display. This allows the pixel positions returned to
-accurately represent the position the display was touched. In order to
+The example application shows the mos.yml attributes that maybe used.
+The min_x_adc, max_x_adc, min_y_adc and max_y_adc should be set in the mos.yml
+file in order to calibrate the display. This allows the pixel positions returned
+to accurately represent the position the display was touched. In order to
 calibrate the display run the example program and touch each edge of the
 display.
+
 When running the example application debug data is sent out on the serial port
 when the display is touched.
 E.G
@@ -78,14 +81,16 @@ config_schema:
   - ["spi.mosi_gpio", 23] # Master out slave in SPI data pin
   - ["spi.miso_gpio", 19] # Master in slave out SPI data pin
   - ["spi.sclk_gpio", 18] # SPI clock pin
-  - ["ads7843.cs_index", "i", 1, {title: "spi.cs*_gpio index, 0, 1 or 2"}] # This defines the SPI /CS line to use (0, 1 or 2). In this case /CS1 is used
-  - ["spi.cs1_gpio", 27 ] # This defines the ESP32 pin that the ADS7843 /CS line is connected to
+  # This defines the SPI /CS line to use (0, 1 or 2). In this case /CS1 is used
+  - ["ads7843.cs_index", "i", 1, {title: "spi.cs*_gpio index, 0, 1 or 2"}]
+  # This defines the ESP32 pin that the ADS7843 /CS line is connected too
+  - ["spi.cs1_gpio", 27 ]
   - ["ads7843.irq_pin", "i", 25, {title: "IRQ pin (taken low when the display is touched.)"}]
   - ["ads7843.x_pixels", "i", 320, {title: "The display pixel count in the horizontal direction"}]
   - ["ads7843.y_pixels", "i", 240, {title: "The display pixel count in the vertical direction"}]
   - ["ads7843.flip_x_y", "i", 0, {title: "Flip the X and Y directions (0/1, 0 = no flip). Use this is if the display is upside down."}]
-# You may calibrate the display by reading the ADC values from the debug text on the serial port when touching the edges of the screen
-# for both the left right (x) and top bottom (y) edges. Once this has been done for your display enter them here.
+  # You may calibrate the display by reading the ADC values from the debug text on the serial port when touching the edges of the screen
+  # for both the left right (x) and top bottom (y) edges. Once this has been done for your display enter them here.
   - ["ads7843.min_x_adc", "i", 12,  {title: "The min X axis ADC calibration value. Enter the value from debug output ('adc x' value at screen edge)."}]
   - ["ads7843.max_x_adc", "i", 121,  {title: "The max X axis ADC calibration value. Enter the value from debug output ('adc x' value at screen edge)."}]
   - ["ads7843.min_y_adc", "i", 7,  {title: "The min Y axis ADC calibration value. Enter the value from debug output ('adc y' value at screen edge)."}]
