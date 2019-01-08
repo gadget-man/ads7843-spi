@@ -86,6 +86,7 @@ config_schema:
   - ["ads7843.cs_index", "i", 1, {title: "spi.cs*_gpio index, 0, 1 or 2"}]
   # This defines the ESP32 pin that the ADS7843 /CS line is connected too
   - ["spi.cs1_gpio", 27 ]
+  - ["ads7843", "o", {title: "ADS7843/XPT2046 TouchScreen"}]
   - ["ads7843.irq_pin", "i", 25, {title: "IRQ pin (taken low when the display is touched.)"}]
   - ["ads7843.x_pixels", "i", 320, {title: "The display pixel count in the horizontal direction"}]
   - ["ads7843.y_pixels", "i", 240, {title: "The display pixel count in the vertical direction"}]
@@ -107,8 +108,7 @@ config_schema:
 static void touch_handler(struct mgos_ads7843_event_data *ed) {
   if (!ed) return;
 
-  LOG(LL_INFO, ("Touch %s at (%d,%d) pressure=%d, length=%d",
-      ed->direction==TOUCH_UP?"UP":"DOWN", ed->x, ed->y, ed->z, ed->length));
+  LOG(LL_INFO, ("x=%d, y=%d, down_seconds=%f", ed->x, ed->y, ed->down_seconds));
 }
 
 enum mgos_app_init_result mgos_app_init(void) {
