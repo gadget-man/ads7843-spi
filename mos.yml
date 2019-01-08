@@ -26,10 +26,10 @@ config_schema:
   - ["ads7843.flip_x_y", "i", 0, {title: "Flip the X and Y directions (0/1, 0 = no flip). Use this is if the display is upside down."}]
 # You may calibrate the display by reading the ADC values from the debug text on the serial port when touching the edges of the screen
 # for both the left right (x) and top bottom (y) edges. Once this has been done for your display enter them here.
-#  - ["ads7843.min_x_adc", "i", 12,  {title: "The min X axis ADC calibration value. Enter the value from debug output ('adc x' value at screen edge)."}]
-#  - ["ads7843.max_x_adc", "i", 121,  {title: "The max X axis ADC calibration value. Enter the value from debug output ('adc x' value at screen edge)."}]
-#  - ["ads7843.min_y_adc", "i", 7,  {title: "The min Y axis ADC calibration value. Enter the value from debug output ('adc y' value at screen edge)."}]
-#  - ["ads7843.max_y_adc", "i", 118,  {title: "The max Y axis ADC calibration value. Enter the value from debug output ('adc y' value at screen edge)."}]
+  - ["ads7843.min_x_adc", "i", 12,  {title: "The min X axis ADC calibration value. Enter the value from debug output ('adc x' value at screen edge)."}]
+  - ["ads7843.max_x_adc", "i", 121,  {title: "The max X axis ADC calibration value. Enter the value from debug output ('adc x' value at screen edge)."}]
+  - ["ads7843.min_y_adc", "i", 7,  {title: "The min Y axis ADC calibration value. Enter the value from debug output ('adc y' value at screen edge)."}]
+  - ["ads7843.max_y_adc", "i", 118,  {title: "The max Y axis ADC calibration value. Enter the value from debug output ('adc y' value at screen edge)."}]
 
 tags:
   - c
