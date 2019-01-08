@@ -233,9 +233,9 @@ bool mgos_ads7843_spi_init(void) {
   max_adc_y = mgos_sys_config_get_ads7843_max_y_adc();
   adc_y_range = max_adc_y-min_adc_y;
 
-  LOG(LL_INFO, ("%s: s_max_x=%d, s_max_y=%d, screen_orentation=%s", __FUNCTION__, s_max_x, s_max_y, screen_orentation ? "PORTRAIT" : "LANDSCAPE"));
-  LOG(LL_INFO, ("%s: min_adc_x=%.f, max_adc_x=%.f, adc_x_range=%.f", __FUNCTION__, min_adc_x, max_adc_x, adc_x_range));
-  LOG(LL_INFO, ("%s: min_adc_y=%.f, max_adc_y=%.f, adc_y_range=%.f", __FUNCTION__, min_adc_y, max_adc_y, adc_y_range));
+  LOG(LL_INFO, ("s_max_x=%d, s_max_y=%d, screen_orentation=%s", s_max_x, s_max_y, screen_orentation ? "PORTRAIT" : "LANDSCAPE"));
+  LOG(LL_INFO, ("min_adc_x=%.f, max_adc_x=%.f, adc_x_range=%.f", min_adc_x, max_adc_x, adc_x_range));
+  LOG(LL_INFO, ("min_adc_y=%.f, max_adc_y=%.f, adc_y_range=%.f", min_adc_y, max_adc_y, adc_y_range));
 
   return true;
 }
