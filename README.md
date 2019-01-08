@@ -82,11 +82,10 @@ config_schema:
   - ["spi.mosi_gpio", 23] # Master out slave in SPI data pin
   - ["spi.miso_gpio", 19] # Master in slave out SPI data pin
   - ["spi.sclk_gpio", 18] # SPI clock pin
-  # This defines the SPI /CS line to use (0, 1 or 2). In this case /CS1 is used
-  - ["ads7843.cs_index", "i", 1, {title: "spi.cs*_gpio index, 0, 1 or 2"}]
   # This defines the ESP32 pin that the ADS7843 /CS line is connected too
   - ["spi.cs1_gpio", 27 ]
   - ["ads7843", "o", {title: "ADS7843/XPT2046 TouchScreen"}]
+  - ["ads7843.cs_index", "i", 1, {title: "spi.cs*_gpio index, 0, 1 or 2"}]
   - ["ads7843.irq_pin", "i", 25, {title: "IRQ pin (taken low when the display is touched.)"}]
   - ["ads7843.x_pixels", "i", 320, {title: "The display pixel count in the horizontal direction"}]
   - ["ads7843.y_pixels", "i", 240, {title: "The display pixel count in the vertical direction"}]
