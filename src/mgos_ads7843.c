@@ -95,13 +95,20 @@ static void ads7843_down_cb(void *arg) {
  * @param arg Not used.
  **/
 static void dispatch_s_event_handler(void *arg) {
-  LOG(LL_INFO, ("Touch %s, down for %.1f seconds", event_data.direction==TOUCH_UP?"UP":"DOWN", event_data.down_seconds));
-  LOG(LL_INFO, ("pixels x/y = %d/%d, adc x/y = %d/%d",  event_data.x, event_data.y, event_data.x_adc, event_data.y_adc));
-  LOG(LL_INFO, ("Down for %.1f seconds",  event_data.down_seconds));
 
   if( s_event_handler ) {
     s_event_handler(&event_data);
   }
+}
+
+/**
+ * @brief Get the screen orientation.
+ **/
+uint16_t get_screen_orientation(void) {
+  if( s_max_x >= s_max_y ) {
+    return LANDSCAPE;
+  }
+  return PORTRAIT;
 }
 
 /**
@@ -115,8 +122,8 @@ static void ads7843_irh(int pin, void *arg) {
   uint8_t y_pos       = 0;
   float x_factor      = 0.0;
   float y_factor      = 0.0;
-  static float last_x = 0.0;
-  static float last_y = 0.0;
+  uint16_t x_pixels   = 0;
+  uint16_t y_pixels   = 0;
 
   mgos_gpio_disable_int( mgos_sys_config_get_ads7843_irq_pin() );
 
@@ -144,16 +151,13 @@ static void ads7843_irh(int pin, void *arg) {
           y_pos = MAX_ADC_VALUE-y_pos;
         }
 
-        event_data.x_adc=x_pos;
-        event_data.y_adc=y_pos;
-
         if( x_pos >= min_adc_x ) {
           x_factor = ((float)x_pos-min_adc_x)/adc_x_range;
         }
         else {
           x_factor=0.0;
         }
-        event_data.x = s_max_x*x_factor;
+        x_pixels = s_max_x*x_factor;
 
         if( y_pos >= min_adc_y ) {
           y_factor = ((float)y_pos-min_adc_y)/adc_y_range;
@@ -161,7 +165,7 @@ static void ads7843_irh(int pin, void *arg) {
         else {
           y_factor=0.0;
         }
-        event_data.y = s_max_y*y_factor;
+        y_pixels = s_max_y*y_factor;
 
         break;
       }
@@ -170,6 +174,10 @@ static void ads7843_irh(int pin, void *arg) {
   bool irq_high = mgos_gpio_read(mgos_sys_config_get_ads7843_irq_pin());
   if( !irq_high ) {
     event_data.direction = TOUCH_DOWN;
+    event_data.x_adc=x_pos;
+    event_data.y_adc=y_pos;
+    event_data.x = x_pixels;
+    event_data.y = y_pixels;
     if( initial_down_seconds <= 0.0 ) {
       initial_down_seconds=mgos_uptime();
     }
@@ -181,31 +189,18 @@ static void ads7843_irh(int pin, void *arg) {
   }
   else {
     event_data.direction = TOUCH_UP;
-    event_data.x=last_x;
-    event_data.y=last_y;
     initial_down_seconds = 0.0;
     //We don't reset the event_data.down_seconds so that
     //we preserve the histor of the last down time which
     //may be needed.
     mgos_gpio_enable_int(mgos_sys_config_get_ads7843_irq_pin());
   }
+  event_data.orientation = get_screen_orientation();
   //callback to to ensure we do not call the handler from the interrupt context
   mgos_set_timer(0, 0, dispatch_s_event_handler, NULL);
 
-  last_x = event_data.x;
-  last_y = event_data.y;
   (void) pin;
   (void) arg;
-}
-
-/**
- * @brief Get the screen orientation.
- **/
-uint16_t get_screen_orientation(void) {
-  if( s_max_x >= s_max_y ) {
-    return LANDSCAPE;
-  }
-  return PORTRAIT;
 }
 
 /**
