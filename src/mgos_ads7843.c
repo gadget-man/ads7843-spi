@@ -37,6 +37,8 @@ static float min_adc_y;
 static float max_adc_y;
 static float adc_y_range;
 
+static bool ads7843_down_cb_timer_running;
+
 /**
  * @brief Get the touch position on the x or y axis.
  * @param x If true then the x position is read. If false then the y position is read
@@ -87,6 +89,7 @@ static int8_t get_touch_xpos(bool x) {
  * @param arg Not used.
  **/
 static void ads7843_down_cb(void *arg) {
+  ads7843_down_cb_timer_running = false;
   ads7843_irh(mgos_sys_config_get_ads7843_irq_pin(), NULL);
 }
 
@@ -148,12 +151,22 @@ static void ads7843_irh(int pin, void *arg) {
   uint16_t x_pixels   = 0;
   uint16_t y_pixels   = 0;
 
-  mgos_gpio_disable_int( mgos_sys_config_get_ads7843_irq_pin() );
+  mgos_gpio_disable_int( pin );
 
-  //We don't expect to loop through all itterations but this ensures we do exit
+  float now = mgos_uptime();
+  static float previous = 0;
+  bool touched = !mgos_gpio_read(pin);
+
+  //Ignore very fast interrupts that occur when the user doesn't press very hard on the display.
+  if( now - previous < 0.025 ) {
+	  mgos_gpio_enable_int(pin);
+	  return;
+  }
+
+  //We don't expect to loop through all iterations but this ensures we do exit
   //even if we only get max adc values.
   while( loop_count < 200 ) {
-      //These values are ADC values with the top left of the screen in landcape mode
+      //These values are ADC values with the top left of the screen in landscape mode
       x_pos = get_touch_xpos(true);
       y_pos = get_touch_xpos(false);
 
@@ -189,8 +202,7 @@ static void ads7843_irh(int pin, void *arg) {
       }
   }
 
-  bool irq_high = mgos_gpio_read(mgos_sys_config_get_ads7843_irq_pin());
-  if( !irq_high ) {
+  if( touched ) {
     event_data.direction = TOUCH_DOWN;
     event_data.x_adc=x_pos;
     event_data.y_adc=y_pos;
@@ -202,20 +214,25 @@ static void ads7843_irh(int pin, void *arg) {
     else {
       event_data.down_seconds = mgos_uptime()-initial_down_seconds;
     }
-    // To avoid DOWN events without an UP event, set a timer
-    mgos_set_timer(100, 0, ads7843_down_cb, NULL);
+    if( !ads7843_down_cb_timer_running ) {
+    	ads7843_down_cb_timer_running = true;
+        // To avoid DOWN events without an UP event, set a timer
+        mgos_set_timer(100, 0, ads7843_down_cb, NULL);
+    }
   }
   else {
     event_data.direction = TOUCH_UP;
     initial_down_seconds = 0.0;
     //We don't reset the event_data.down_seconds so that
-    //we preserve the histor of the last down time which
+    //we preserve the history of the last down time which
     //may be needed.
-    mgos_gpio_enable_int(mgos_sys_config_get_ads7843_irq_pin());
+    mgos_gpio_enable_int(pin);
   }
   event_data.orientation = get_screen_orientation();
   //callback to to ensure we do not call the handler from the interrupt context
   mgos_set_timer(0, 0, dispatch_s_event_handler, NULL);
+
+  previous = now;
 
   (void) pin;
   (void) arg;
