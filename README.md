@@ -1,5 +1,5 @@
 # ADS7843
-Mongoose native SPI driver for ADS7843/XPT2046 Touch Screen Controller
+Mongoose native SPI driver for ADS7843/XPT2046 Touch Screen Controller.
 
 ## Introduction
 
